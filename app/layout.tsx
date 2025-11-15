@@ -28,6 +28,9 @@ export const metadata: Metadata = {
     description: "Redimaq Equipamentos - Soluções completas em móveis e equipamentos para escritório",
     siteName: "Redimaq",
   },
+  icons: {
+    icon: "/icon_cadeira.png",
+  },
 }
 
 export const viewport: Viewport = {
