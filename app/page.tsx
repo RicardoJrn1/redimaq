@@ -10,6 +10,7 @@ import {
   FaChevronRight,
   FaTimesCircle,
   FaPhoneAlt,
+  FaNewspaper,
 } from "react-icons/fa"
 import Link from "next/link"
 import { useState, useEffect, useCallback, useRef } from "react"
@@ -41,7 +42,6 @@ interface FooterLink {
 interface ContactInfo {
   address: string
   phone: string
-  email: string
 }
 
 const CAROUSEL_IMAGES = ["/seção_1.webp", "/seção_01.webp"]
@@ -99,12 +99,13 @@ const FOOTER_LINKS: FooterLink[] = [
   { href: "#inicio", label: "Início" },
   { href: "#produtos", label: "Produtos" },
   { href: "#sobre-nos", label: "Sobre Nós" },
+  { href: "/consertodecadeiras", label: "Consertos" },
+  { href: "/redimaqblog", label: "Blog" },
 ]
 
 const CONTACT_INFO: ContactInfo = {
   address: "R. Caramuru, 167 - Centro, Pato Branco - PR, 85501-064",
   phone: "(46) 98401-8404",
-  email: "contato@redimaq.com.br",
 }
 
 const currentYear = new Date().getFullYear()
@@ -223,8 +224,7 @@ export default function Home() {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={label}
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  aria-label={label}                  
                   className={`
                     group relative p-2 md:p-3 rounded-full
                     bg-white/5 backdrop-blur-sm
@@ -242,6 +242,26 @@ export default function Home() {
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </a>
               ))}
+              {/* Botão para o Blog */}
+              <Link
+                href="/redimaqblog"
+                aria-label="Ir para o Blog da Redimaq"
+                className={`
+                  group relative ml-4 flex items-center gap-2
+                  px-3 py-1.5 md:px-4 md:py-2.5
+                  text-xs md:text-sm font-semibold
+                  rounded-full backdrop-blur-sm
+                  bg-white/5 border border-white/10 text-white/80
+                  transition-all duration-300
+                  hover:bg-white/10 hover:text-white hover:border-white/20
+                  hover:scale-105 hover:shadow-lg hover:shadow-blue-500/10
+                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white
+                  animate-in fade-in zoom-in
+                `}
+              >
+                <FaNewspaper className="h-3 w-3 md:h-4 md:w-4 transition-transform group-hover:scale-110" />
+                Blog
+              </Link>
             </div>
           </nav>
         </div>
@@ -662,15 +682,24 @@ export default function Home() {
                 <h3 className="font-bold text-white mb-4">Navegação</h3>
                 <ul className="space-y-2">
                   {FOOTER_LINKS.map((link) => (
-                    <li key={link.label}>
-                      <a
-                        href={link.href}
-                        onClick={(e) => scrollToSection(e, link.href)}
-                        className="hover:text-white transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded"
-                      >
-                        {link.label}
-                      </a>
-                    </li>
+                    <li key={link.label}>{
+                      link.href.startsWith("#") ? (
+                        <a
+                          href={link.href}
+                          onClick={(e) => scrollToSection(e, link.href)}
+                          className="hover:text-white transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          className="hover:text-white transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded"
+                        >
+                          {link.label}
+                        </Link>
+                      )
+                    }</li>
                   ))}
                 </ul>
               </div>
@@ -684,11 +713,6 @@ export default function Home() {
                     <FaPhoneAlt size={12} aria-hidden="true" />
                     <a href={`tel:${CONTACT_INFO.phone.replace(/\D/g, '')}`} className="hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded">
                       {CONTACT_INFO.phone}
-                    </a>
-                  </p>
-                  <p>
-                    <a href={`mailto:${CONTACT_INFO.email}`} className="hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded">
-                      {CONTACT_INFO.email}
                     </a>
                   </p>
                 </address>
