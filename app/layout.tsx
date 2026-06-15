@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist, Geist_Mono, Cormorant } from "next/font/google"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -13,6 +13,14 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   display: "swap",
+})
+
+// Fonte serifada de display para títulos — dá o tom "luxo".
+const cormorant = Cormorant({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 })
 
 export const metadata: Metadata = {
@@ -51,7 +59,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${geistSans.variable} ${geistMono.variable} font-bold antialiased`}>{children}</body>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} antialiased`}
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
     </html>
   )
 }
