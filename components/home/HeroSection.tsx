@@ -1,3 +1,4 @@
+import { FaChevronDown } from "react-icons/fa"
 import { VerticalImageStack, type StackImage } from "@/components/ui/vertical-image-stack"
 import { whatsappUrl } from "@/lib/site"
 
@@ -23,25 +24,37 @@ export default function HeroSection() {
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-8">
           {/* Texto */}
           <div className="text-center lg:text-left">
-            <p className="mb-5 text-xs font-medium uppercase tracking-[0.3em] text-cream/60">
-              Móveis &amp; Equipamentos de Escritório
+            <p
+              className="animate-hero-rise mb-5 text-xs font-medium uppercase tracking-[0.3em] text-cream/60"
+              style={{ animationDelay: "0ms" }}
+            >
+              Móveis &amp; Equipamentos de Escritório · Desde 1989
             </p>
-            <h1 className="font-serif text-5xl font-medium leading-[1.05] tracking-tight text-balance sm:text-6xl md:text-7xl">
-              Bem-vindo à <span className="italic text-sand">Redimaq</span>
+            <h1
+              className="animate-hero-rise font-serif text-5xl font-medium leading-[1.05] tracking-tight text-balance sm:text-6xl md:text-7xl"
+              style={{ animationDelay: "80ms" }}
+            >
+              Móveis corporativos que elevam seu <span className="italic text-sand">espaço</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-cream/70 md:text-lg lg:mx-0">
-              Sua fonte confiável para móveis e equipamentos de escritório de alta qualidade — projetados para
-              transformar seu espaço de trabalho em um ambiente funcional e elegante.
+            <p
+              className="animate-hero-rise mx-auto mt-6 max-w-xl text-base leading-relaxed text-cream/70 md:text-lg lg:mx-0"
+              style={{ animationDelay: "160ms" }}
+            >
+              A Redimaq é sua fonte confiável de móveis e equipamentos de alta qualidade — feitos para transformar seu
+              ambiente de trabalho em um espaço funcional e elegante.
             </p>
 
-            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+            <div
+              className="animate-hero-rise mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start"
+              style={{ animationDelay: "240ms" }}
+            >
               <a
                 href={whatsappUrl("Olá! Gostaria de fazer um orçamento.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-full bg-cream px-8 py-3.5 text-sm font-semibold uppercase tracking-wide text-charcoal transition-all duration-300 hover:scale-105 hover:bg-white hover:shadow-2xl hover:shadow-cream/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream active:scale-95"
+                className="inline-flex items-center justify-center rounded-full bg-cream px-8 py-3.5 text-sm font-semibold uppercase tracking-wide text-charcoal transition-all duration-300 hover:scale-105 hover:bg-sand-light hover:shadow-2xl hover:shadow-cream/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream active:scale-95"
               >
-                Solicitar orçamento
+                Montar meu escritório
               </a>
               <a
                 href="#produtos"
@@ -50,6 +63,13 @@ export default function HeroSection() {
                 Ver soluções
               </a>
             </div>
+
+            <p
+              className="animate-hero-rise mt-5 text-[11px] uppercase tracking-[0.2em] text-cream/60"
+              style={{ animationDelay: "320ms" }}
+            >
+              Entrega gratuita na região · Resposta rápida no WhatsApp · Sem compromisso
+            </p>
           </div>
 
           {/* Pilha de imagens */}
@@ -58,6 +78,16 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
+
+      {/* Indicador de scroll (só desktop) */}
+      <a
+        href="#produtos"
+        aria-label="Rolar para ver as soluções"
+        className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-cream/50 transition-colors hover:text-cream md:flex"
+      >
+        <span className="text-[10px] uppercase tracking-[0.3em]">Role para ver</span>
+        <FaChevronDown className="animate-scroll-hint h-3.5 w-3.5" aria-hidden="true" />
+      </a>
     </section>
   )
 }

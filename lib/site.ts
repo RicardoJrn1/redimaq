@@ -5,6 +5,9 @@ import { FaWhatsapp, FaInstagram, FaLinkedin } from "react-icons/fa"
 
 export const WHATSAPP_NUMBER = "5546984018404"
 
+/** Intervalo (ms) dos carrosséis que giram sozinhos (Products e Versatility). */
+export const AUTOPLAY_MS = 3500
+
 /** Monta um link de WhatsApp já com a mensagem codificada. */
 export function whatsappUrl(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`

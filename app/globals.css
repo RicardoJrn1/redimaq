@@ -195,8 +195,8 @@
     transform: translateX(0);
   }
   100% {
-    /* Updated: 11 logos * 2 repetitions with 0.5rem gap */
-    transform: translateX(calc(-420px * 11 - 0.5rem * 11));
+    /* A lista de logos é duplicada; mover -50% gera um loop perfeitamente contínuo. */
+    transform: translateX(-50%);
   }
 }
 
@@ -204,12 +204,77 @@
 
 /* Reduzida duração da animação de 50s para 30s para marcas passarem mais rápido */
 .animate-carousel-scroll {
-  animation: carousel-scroll 70s linear infinite;
+  animation: carousel-scroll 45s linear infinite;
+}
+
+/* Respeita "reduzir movimento" do sistema: para a faixa de logos. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-carousel-scroll {
+    animation: none;
+  }
 }
 
 /* Removida classe animate-logo-rotate */
 
-/* Pausa a animação quando hover especificamente na imagem, não no container */
-.carousel-container:has(img:hover) .animate-carousel-scroll {
+/* Pausa a faixa ao passar o mouse sobre ela (mais estável que :has(img:hover)). */
+.carousel-container:hover .animate-carousel-scroll {
   animation-play-state: paused;
+}
+
+/* Entrada escalonada do texto da Hero (dispara no load; o delay vem inline). */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-hero-rise {
+  animation: hero-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-rise {
+    animation: none;
+  }
+}
+
+/* Indicador de scroll da Hero (oscilação suave). */
+@keyframes scroll-hint {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
+}
+
+.animate-scroll-hint {
+  animation: scroll-hint 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll-hint {
+    animation: none;
+  }
+}
+
+/* Grão fino global: textura sutil sobre as superfícies cream e charcoal. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
 }

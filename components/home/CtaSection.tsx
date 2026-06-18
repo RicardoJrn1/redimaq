@@ -1,30 +1,39 @@
 import AnimatedSection from "@/components/AnimatedSection"
 import { whatsappUrl } from "@/lib/site"
 
-/** Chamada final para modernizar o escritório. */
+/** Chamada final (fecho escuro, ecoando a Hero) para modernizar o escritório. */
 export default function CtaSection() {
   return (
     <AnimatedSection>
-      <section className="w-full py-8 md:py-16 bg-white text-black text-center">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-8 text-balance">
-            A oportunidade perfeita para modernizar seu escritório!
+      <section className="relative isolate w-full overflow-hidden bg-charcoal py-20 text-center text-cream md:py-32">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sand/10 blur-3xl" />
+        </div>
+
+        <div className="container relative z-10 mx-auto max-w-3xl px-4">
+          <p className="mb-5 text-xs font-medium uppercase tracking-[0.3em] text-cream/50">Vamos começar</p>
+          <h2 className="font-serif text-4xl font-medium leading-[1.1] tracking-tight text-balance md:text-6xl">
+            A hora de modernizar seu <span className="italic text-sand">escritório</span> é agora
           </h2>
-          <div className="max-w-3xl mx-auto mb-6 md:mb-10 space-y-2 md:space-y-3 text-base md:text-lg leading-relaxed">
-            <p>Móveis corporativos de alto padrão, prontos para transformar seu ambiente de trabalho!</p>
-            <p>Investimento estratégico para aumentar produtividade e bem-estar da equipe!</p>
-            <p>
-              <strong>Condição especial para grandes projetos</strong> – aproveite agora mesmo!
-            </p>
+          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-cream/70 md:text-lg">
+            Móveis corporativos de alto padrão, condição especial para grandes projetos e um atendimento que cuida de
+            cada detalhe.
+          </p>
+
+          <div className="mt-10 flex justify-center">
+            <a
+              href={whatsappUrl("Olá! Vi a oferta no site e gostaria de solicitar um orçamento.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full bg-cream px-9 py-4 text-sm font-semibold uppercase tracking-wide text-charcoal transition-all duration-300 hover:scale-105 hover:bg-sand-light hover:shadow-2xl hover:shadow-cream/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream active:scale-95"
+            >
+              Solicitar orçamento
+            </a>
           </div>
-          <a
-            href={whatsappUrl("Olá! Vi a oferta no site e gostaria de solicitar um orçamento.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-6 md:px-10 py-3 md:py-4 bg-gradient-to-r from-black via-gray-900 to-black text-white text-base md:text-lg font-bold rounded-xl transition-all duration-300 shadow-xl shadow-black/20 hover:shadow-2xl hover:shadow-black/40 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-95 animate-pulse-soft hover:from-gray-800 hover:to-gray-700"
-          >
-            Solicitar Orçamento Agora
-          </a>
+
+          <p className="mt-5 text-xs uppercase tracking-wide text-cream/60">
+            Entrega gratuita na região · Resposta rápida no WhatsApp · Desde 1989
+          </p>
         </div>
       </section>
     </AnimatedSection>

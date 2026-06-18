@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react"
 import { motion, AnimatePresence, type PanInfo } from "framer-motion"
 import { FaTimes, FaPause } from "react-icons/fa"
 import Image from "next/image"
+import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion"
 
 export interface StackImage {
   id: number | string
@@ -36,8 +37,13 @@ export function VerticalImageStack({
   const [hovered, setHovered] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [lightbox, setLightbox] = useState<StackImage | null>(null)
+  const [showHint, setShowHint] = useState(true)
   const lastNavigationTime = useRef(0)
   const navigationCooldown = 400
+  // Marca se o gesto atual virou um arraste, para não abrir o lightbox sem querer.
+  const didDrag = useRef(false)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const reduced = usePrefersReducedMotion()
 
   const paused = hovered || dragging || lightbox !== null
 
@@ -46,6 +52,7 @@ export function VerticalImageStack({
       const now = Date.now()
       if (now - lastNavigationTime.current < navigationCooldown) return
       lastNavigationTime.current = now
+      setShowHint(false)
 
       setCurrentIndex((prev) => {
         if (newDirection > 0) {
@@ -70,23 +77,34 @@ export function VerticalImageStack({
 
   // Autoplay (pausa no hover / arraste / lightbox aberto).
   useEffect(() => {
-    if (!autoPlay || paused || images.length < 2) return
+    if (!autoPlay || paused || reduced || images.length < 2) return
     const id = setInterval(() => navigate(1), interval)
     return () => clearInterval(id)
-  }, [autoPlay, paused, interval, navigate, images.length])
+  }, [autoPlay, paused, reduced, interval, navigate, images.length])
 
   // Fecha o lightbox com ESC e trava o scroll do fundo enquanto aberto.
   useEffect(() => {
     if (!lightbox) return
+    const previouslyFocused = document.activeElement as HTMLElement | null
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightbox(null)
+      // Único elemento focável é o botão Fechar: mantém o foco preso nele.
+      if (e.key === "Tab") {
+        e.preventDefault()
+        closeButtonRef.current?.focus()
+      }
     }
     document.addEventListener("keydown", onKey)
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
+    // Move o foco para dentro do modal (após a animação de montagem).
+    const raf = requestAnimationFrame(() => closeButtonRef.current?.focus())
     return () => {
       document.removeEventListener("keydown", onKey)
       document.body.style.overflow = prevOverflow
+      cancelAnimationFrame(raf)
+      // Devolve o foco ao elemento que abriu o lightbox.
+      previouslyFocused?.focus?.()
     }
   }, [lightbox])
 
@@ -141,9 +159,25 @@ export function VerticalImageStack({
               drag={isCurrent ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.25}
-              onDragStart={() => setDragging(true)}
+              onTapStart={() => {
+                didDrag.current = false
+              }}
+              onDragStart={() => {
+                didDrag.current = true
+                setDragging(true)
+                setShowHint(false)
+              }}
               onDragEnd={handleDragEnd}
-              onTap={() => (isCurrent ? setLightbox(image) : setCurrentIndex(index))}
+              onTap={() => {
+                // Ao soltar um arraste o framer também dispara onTap; ignoramos esse
+                // "tap" sintético para que arrastar a imagem não abra o lightbox.
+                if (didDrag.current) {
+                  didDrag.current = false
+                  return
+                }
+                if (isCurrent) setLightbox(image)
+                else setCurrentIndex(index)
+              }}
               style={{ zIndex: style.zIndex }}
             >
               <div className="relative aspect-[1600/667] w-[80vw] max-w-[400px] overflow-hidden rounded-2xl bg-charcoal-light shadow-2xl shadow-black/50 ring-1 ring-white/15 sm:w-[480px] sm:max-w-none lg:w-[660px]">
@@ -184,7 +218,7 @@ export function VerticalImageStack({
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`h-2 rounded-full transition-all duration-300 ${
+            className={`relative h-2 rounded-full transition-all duration-300 before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-[''] ${
               index === currentIndex ? "w-6 bg-cream" : "w-2 bg-cream/30 hover:bg-cream/50"
             }`}
             aria-label={`Ir para imagem ${index + 1}`}
@@ -192,6 +226,11 @@ export function VerticalImageStack({
           />
         ))}
       </div>
+
+      {/* Dica de arraste (só mobile, some após a 1ª interação) */}
+      {images.length > 1 && showHint && (
+        <p className="text-[10px] uppercase tracking-[0.3em] text-cream/40 lg:hidden">‹ arraste ›</p>
+      )}
 
       {/* Lightbox com fundo embaçado */}
       <AnimatePresence>
@@ -224,6 +263,7 @@ export function VerticalImageStack({
                 <Image src={lightbox.src} alt={lightbox.alt} fill sizes="92vw" className="object-contain" />
               </div>
               <button
+                ref={closeButtonRef}
                 onClick={() => setLightbox(null)}
                 className="absolute -right-3 -top-3 grid h-10 w-10 place-items-center rounded-full bg-cream text-charcoal shadow-lg transition-transform duration-200 hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
                 aria-label="Fechar imagem"

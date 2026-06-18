@@ -21,10 +21,20 @@ export default function Header({ overlay = false }: HeaderProps) {
 
   useEffect(() => {
     if (!overlay) return
-    const onScroll = () => setScrolled(window.scrollY > 20)
+    let frame = 0
+    const onScroll = () => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 20)
+        frame = 0
+      })
+    }
     onScroll()
     window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      if (frame) cancelAnimationFrame(frame)
+    }
   }, [overlay])
 
   // "solid" = aparência sólida (creme). Sem overlay, é sempre sólido.
@@ -116,7 +126,7 @@ export default function Header({ overlay = false }: HeaderProps) {
                 className="h-3.5 w-3.5 transition-transform duration-300 group-hover:scale-110"
                 aria-hidden="true"
               />
-              Blog
+              <span className="hidden sm:inline">Blog</span>
             </Link>
           </div>
         </nav>

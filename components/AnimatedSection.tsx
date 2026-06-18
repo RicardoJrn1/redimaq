@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, type ReactNode } from "react"
+import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion"
 
 interface AnimatedSectionProps {
   children: ReactNode
@@ -16,6 +17,7 @@ interface AnimatedSectionProps {
 export default function AnimatedSection({ children, className = "", id, delay = 0 }: AnimatedSectionProps) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLDivElement>(null)
+  const reduced = usePrefersReducedMotion()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -41,8 +43,8 @@ export default function AnimatedSection({ children, className = "", id, delay = 
     <div
       ref={sectionRef}
       id={id}
-      className={`transition-all duration-1000 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+      className={`${reduced ? "" : "transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"} ${
+        isVisible || reduced ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       } ${className}`}
     >
       {children}

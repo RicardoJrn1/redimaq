@@ -1,6 +1,7 @@
 import AnimatedSection from "@/components/AnimatedSection"
 import Footer from "@/components/Footer"
 import Header from "@/components/Header"
+import WhatsAppFloat from "@/components/WhatsAppFloat"
 import CtaSection from "@/components/home/CtaSection"
 import ClientLogosSection from "@/components/home/ClientLogosSection"
 import HeroSection from "@/components/home/HeroSection"
@@ -8,6 +9,7 @@ import LocationSection from "@/components/home/LocationSection"
 import ProblemSection from "@/components/home/ProblemSection"
 import ProductsSection from "@/components/home/ProductsSection"
 import SolutionsSection from "@/components/home/SolutionsSection"
+import StatsSection from "@/components/home/StatsSection"
 import VersatilitySection from "@/components/home/VersatilitySection"
 
 export default function Home() {
@@ -18,6 +20,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <ClientLogosSection />
+        <StatsSection />
         <ProblemSection />
         <ProductsSection />
         <SolutionsSection />
@@ -29,6 +32,8 @@ export default function Home() {
       <AnimatedSection>
         <Footer />
       </AnimatedSection>
+
+      <WhatsAppFloat />
     </>
   )
 }
