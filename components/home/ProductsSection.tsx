@@ -1,53 +1,63 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { FaChevronLeft, FaChevronRight, FaWhatsapp, FaArrowRight } from "react-icons/fa"
+import { FaTable, FaChair, FaBoxes, FaWrench, FaWhatsapp, FaArrowRight } from "react-icons/fa"
+import AnimatedSection from "@/components/AnimatedSection"
 import { whatsappUrl, AUTOPLAY_MS } from "@/lib/site"
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion"
 
 interface Product {
   src: string
-  title: string
+  label: string
+  word: string
   alt: string
+  icon: typeof FaChair
   href: string
   /** true = link externo (WhatsApp); false = rota interna do site. */
   external: boolean
   cta: string
 }
 
-// Editável: títulos, destinos e ordem.
 const PRODUCTS: Product[] = [
   {
     src: "/mesa.webp",
-    title: "Mesas",
+    label: "Mesas",
+    word: "MESAS",
     alt: "Mesa de escritório em L",
+    icon: FaTable,
     href: whatsappUrl("Olá! Gostaria de solicitar um orçamento para Mesas."),
     external: true,
     cta: "Solicitar orçamento",
   },
   {
     src: "/cadeira-1.webp",
-    title: "Cadeiras",
+    label: "Cadeiras",
+    word: "CADEIRAS",
     alt: "Cadeira de escritório",
+    icon: FaChair,
     href: whatsappUrl("Olá! Gostaria de solicitar um orçamento para Cadeiras."),
     external: true,
     cta: "Solicitar orçamento",
   },
   {
     src: "/armarios.webp",
-    title: "Armário",
+    label: "Armário",
+    word: "ARMÁRIO",
     alt: "Armários e lockers",
+    icon: FaBoxes,
     href: whatsappUrl("Olá! Gostaria de solicitar um orçamento para Armário."),
     external: true,
     cta: "Solicitar orçamento",
   },
   {
     src: "/cadeira-2.webp",
-    title: "Conserto",
+    label: "Conserto",
+    word: "CONSERTO",
     alt: "Conserto de cadeiras de escritório",
+    icon: FaWrench,
     href: "/consertodecadeiras",
     external: false,
     cta: "Ver consertos",
@@ -55,9 +65,9 @@ const PRODUCTS: Product[] = [
 ]
 
 /**
- * "Nossas Soluções" — coverflow 3D giratório: item central em destaque, um de
- * cada lado e o quarto ao fundo. Gira sozinho (pausa no hover p/ facilitar o
- * clique) e cada imagem é um link próprio (orçamento no WhatsApp / consertos).
+ * "Nossas Soluções" — palco 3D coverflow (centro/lados/fundo girando entre si),
+ * com a palavra gigante do produto atrás, seletor em pílulas e CTA por item.
+ * Cada produto é um link próprio (orçamento no WhatsApp ou página de conserto).
  */
 export default function ProductsSection() {
   const [active, setActive] = useState(0)
@@ -66,7 +76,7 @@ export default function ProductsSection() {
   const reduced = usePrefersReducedMotion()
   const [isDesktop, setIsDesktop] = useState(false)
 
-  // Offset lateral menor no mobile p/ os vizinhos só "espreitarem" sem serem cortados.
+  // Offset lateral menor no mobile p/ os vizinhos só "espreitarem" sem cortar.
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)")
     const onChange = () => setIsDesktop(mq.matches)
@@ -74,8 +84,6 @@ export default function ProductsSection() {
     mq.addEventListener("change", onChange)
     return () => mq.removeEventListener("change", onChange)
   }, [])
-
-  const go = useCallback((dir: number) => setActive((p) => (p + dir + total) % total), [total])
 
   useEffect(() => {
     if (paused || reduced) return
@@ -106,165 +114,190 @@ export default function ProductsSection() {
     return { x: "0%", y: "-16%", scale: 0.5, rotateY: 0, opacity: 0.45, zIndex: 10, blur: 2 }
   }
 
-  const activeProduct = PRODUCTS[active]
+  const product = PRODUCTS[active]
 
   return (
-    <section id="produtos" className="relative isolate w-full overflow-hidden bg-cream py-16 md:py-28">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-20 bg-gradient-to-b from-charcoal/10 to-transparent"
-      />
-      {/* Spotlight quente atrás do item central */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/2 h-[460px] w-[460px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sand/30 blur-3xl" />
-      </div>
-
-      <div className="container relative z-10 mx-auto px-4 text-center">
-        <p className="mb-4 text-xs font-medium uppercase tracking-[0.3em] text-charcoal/70">O que oferecemos</p>
-        <h2 className="font-serif text-3xl font-medium tracking-tight text-charcoal text-balance sm:text-4xl md:text-5xl">
-          Nossas <span className="italic text-sand-dark">Soluções</span>
-        </h2>
-
-        {/* Palco 3D — gira sozinho e pausa no hover */}
+    <AnimatedSection>
+      <section id="produtos" className="relative isolate w-full overflow-hidden bg-cream py-16 md:py-28">
         <div
-          className="relative mt-8 grid h-[260px] place-items-center md:mt-12 md:h-[380px]"
-          style={{ perspective: "1200px" }}
-          role="group"
-          aria-roledescription="carrossel"
-          aria-label="Carrossel de produtos"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
-          {PRODUCTS.map((product, index) => {
-            const s = styleFor(index)
-            const isCenter = index === active
-            const linkClass = `relative block aspect-[2/3] w-36 cursor-pointer rounded-2xl transition-[opacity,transform] duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-charcoal md:w-60 ${
-              isCenter ? "drop-shadow-2xl" : "drop-shadow-xl hover:scale-[1.03] hover:opacity-90"
-            }`
-            const img = (
-              <Image
-                src={product.src}
-                alt={product.alt}
-                fill
-                sizes="(max-width: 768px) 144px, 240px"
-                className="object-contain"
-                draggable={false}
-                priority={isCenter}
-                loading={isCenter ? undefined : "lazy"}
-              />
-            )
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 z-0 h-20 bg-gradient-to-b from-charcoal/10 to-transparent"
+        />
+        {/* Spotlight quente */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="absolute left-1/2 top-1/2 h-[480px] w-[480px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sand/30 blur-3xl" />
+        </div>
 
-            return (
+        <div className="container relative z-10 mx-auto px-4 text-center">
+          <p className="mb-4 text-xs font-medium uppercase tracking-[0.3em] text-charcoal/70">O que oferecemos</p>
+          <h2 className="font-serif text-3xl font-medium tracking-tight text-charcoal text-balance sm:text-4xl md:text-5xl">
+            Nossas <span className="italic text-sand-dark">Soluções</span>
+          </h2>
+
+          {/* Palco: palavra gigante atrás + coverflow 3D */}
+          <div
+            className="relative mt-6 md:mt-10"
+            role="group"
+            aria-roledescription="carrossel"
+            aria-label="Carrossel de produtos"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+          >
+            {/* Nome do produto em marca-d'água (atrás) */}
+            <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={product.word}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.04 }}
+                  transition={{ duration: 0.5 }}
+                  className="select-none whitespace-nowrap font-serif text-[clamp(3rem,15vw,11rem)] font-medium leading-none text-charcoal/[0.06]"
+                >
+                  {product.word}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+
+            {/* Coverflow 3D */}
+            <div
+              className="relative z-10 grid h-[300px] place-items-center md:h-[440px]"
+              style={{ perspective: "1200px" }}
+            >
+              {PRODUCTS.map((p, index) => {
+                const s = styleFor(index)
+                const isCenter = index === active
+                const linkClass = `relative block aspect-[2/3] w-36 cursor-pointer rounded-2xl transition-[opacity,transform] duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-charcoal md:w-56 ${
+                  isCenter ? "drop-shadow-2xl" : "drop-shadow-xl hover:scale-[1.03] hover:opacity-90"
+                }`
+                const img = (
+                  <Image
+                    src={p.src}
+                    alt={p.alt}
+                    fill
+                    sizes="(max-width: 768px) 144px, 224px"
+                    className="object-contain"
+                    draggable={false}
+                    priority={isCenter}
+                    loading={isCenter ? undefined : "lazy"}
+                  />
+                )
+                // Clicar num item lateral o traz ao centro; o central segue o link.
+                const onClick = (e: { preventDefault: () => void }) => {
+                  if (!isCenter) {
+                    e.preventDefault()
+                    setActive(index)
+                  }
+                }
+
+                return (
+                  <motion.div
+                    key={p.src}
+                    className={`[grid-area:1/1] ${s.blur ? "blur-[2px]" : ""}`}
+                    style={{ zIndex: s.zIndex }}
+                    animate={{ x: s.x, y: s.y, scale: s.scale, rotateY: s.rotateY, opacity: s.opacity }}
+                    transition={{ type: "spring", stiffness: 260, damping: 30 }}
+                  >
+                    {p.external ? (
+                      <a
+                        href={p.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={onClick}
+                        aria-label={
+                          isCenter ? `${p.label} — solicitar orçamento no WhatsApp` : `Trazer ${p.label} para o centro`
+                        }
+                        className={linkClass}
+                      >
+                        {img}
+                      </a>
+                    ) : (
+                      <Link
+                        href={p.href}
+                        onClick={onClick}
+                        aria-label={isCenter ? `${p.label} — ver página de consertos` : `Trazer ${p.label} para o centro`}
+                        className={linkClass}
+                      >
+                        {img}
+                      </Link>
+                    )}
+                  </motion.div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Nome do produto ativo */}
+          <div className="relative mt-4 flex h-10 items-center justify-center" aria-live="polite" aria-atomic="true">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={product.label}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3 }}
+                className="font-serif text-2xl text-charcoal md:text-3xl"
+              >
+                {product.label}
+              </motion.p>
+            </AnimatePresence>
+          </div>
+
+          {/* Seletor de produtos */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            {PRODUCTS.map((p, i) => {
+              const Icon = p.icon
+              const isActive = i === active
+              return (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  aria-pressed={isActive}
+                  className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold uppercase tracking-wide transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-charcoal ${
+                    isActive
+                      ? "bg-charcoal text-cream shadow-lg shadow-charcoal/20"
+                      : "border border-charcoal/15 text-charcoal/70 hover:border-charcoal/40 hover:text-charcoal"
+                  }`}
+                >
+                  <Icon aria-hidden="true" /> {p.label}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* CTA do produto ativo */}
+          <div className="mt-8 flex h-12 justify-center">
+            <AnimatePresence mode="wait">
               <motion.div
-                key={product.src}
-                className={`[grid-area:1/1] ${s.blur ? "blur-[2px]" : ""}`}
-                style={{ zIndex: s.zIndex }}
-                animate={{ x: s.x, y: s.y, scale: s.scale, rotateY: s.rotateY, opacity: s.opacity }}
-                transition={{ type: "spring", stiffness: 260, damping: 30 }}
+                key={product.label}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
               >
                 {product.external ? (
                   <a
                     href={product.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${product.title} — solicitar orçamento no WhatsApp`}
-                    className={linkClass}
+                    className="inline-flex items-center gap-2 rounded-full bg-charcoal px-8 py-3.5 text-sm font-semibold uppercase tracking-wide text-cream transition-all duration-300 hover:scale-105 hover:bg-charcoal-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-charcoal active:scale-95"
                   >
-                    {img}
+                    <FaWhatsapp aria-hidden="true" /> {product.cta}
                   </a>
                 ) : (
-                  <Link href={product.href} aria-label={`${product.title} — ver página de consertos`} className={linkClass}>
-                    {img}
+                  <Link
+                    href={product.href}
+                    className="inline-flex items-center gap-2 rounded-full bg-charcoal px-8 py-3.5 text-sm font-semibold uppercase tracking-wide text-cream transition-all duration-300 hover:scale-105 hover:bg-charcoal-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-charcoal active:scale-95"
+                  >
+                    {product.cta} <FaArrowRight aria-hidden="true" size={12} />
                   </Link>
                 )}
               </motion.div>
-            )
-          })}
-        </div>
-
-        {/* Nome do item ativo */}
-        <div className="relative mx-auto mt-2 flex h-10 items-center justify-center" aria-live="polite" aria-atomic="true">
-          <AnimatePresence mode="wait">
-            <motion.h3
-              key={active}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3 }}
-              className="font-serif text-2xl text-charcoal md:text-3xl"
-            >
-              {activeProduct.title}
-            </motion.h3>
-          </AnimatePresence>
-        </div>
-
-        {/* CTA do item ativo */}
-        <div className="mt-4 flex h-12 justify-center">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-            >
-              {activeProduct.external ? (
-                <a
-                  href={activeProduct.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-charcoal px-8 py-3.5 text-sm font-semibold uppercase tracking-wide text-cream transition-all duration-300 hover:scale-105 hover:bg-charcoal-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-charcoal active:scale-95"
-                >
-                  <FaWhatsapp aria-hidden="true" /> {activeProduct.cta}
-                </a>
-              ) : (
-                <Link
-                  href={activeProduct.href}
-                  className="inline-flex items-center gap-2 rounded-full bg-charcoal px-8 py-3.5 text-sm font-semibold uppercase tracking-wide text-cream transition-all duration-300 hover:scale-105 hover:bg-charcoal-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-charcoal active:scale-95"
-                >
-                  {activeProduct.cta} <FaArrowRight aria-hidden="true" size={12} />
-                </Link>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Controles de rotação */}
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <button
-            type="button"
-            onClick={() => go(-1)}
-            aria-label="Item anterior"
-            className="grid h-11 w-11 place-items-center rounded-full border border-charcoal/15 text-charcoal transition-all duration-300 hover:scale-110 hover:bg-charcoal hover:text-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-charcoal md:h-10 md:w-10"
-          >
-            <FaChevronLeft size={14} />
-          </button>
-
-          <div className="flex items-center gap-2">
-            {PRODUCTS.map((product, i) => (
-              <button
-                key={product.src}
-                type="button"
-                onClick={() => setActive(i)}
-                aria-label={`Ir para ${product.title}`}
-                aria-current={i === active}
-                className={`relative h-2 rounded-full transition-all duration-300 before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-[''] ${
-                  i === active ? "w-6 bg-charcoal" : "w-2 bg-charcoal/25 hover:bg-charcoal/40"
-                }`}
-              />
-            ))}
+            </AnimatePresence>
           </div>
-
-          <button
-            type="button"
-            onClick={() => go(1)}
-            aria-label="Próximo item"
-            className="grid h-11 w-11 place-items-center rounded-full border border-charcoal/15 text-charcoal transition-all duration-300 hover:scale-110 hover:bg-charcoal hover:text-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-charcoal md:h-10 md:w-10"
-          >
-            <FaChevronRight size={14} />
-          </button>
         </div>
-      </div>
-    </section>
+      </section>
+    </AnimatedSection>
   )
 }
