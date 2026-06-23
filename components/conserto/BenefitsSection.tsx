@@ -1,4 +1,3 @@
-import { FaCheckCircle } from "react-icons/fa"
 import AnimatedSection from "@/components/AnimatedSection"
 
 interface Benefit {
@@ -25,17 +24,27 @@ const BENEFITS: Benefit[] = [
 export default function BenefitsSection() {
   return (
     <AnimatedSection id="beneficios">
-      <section className="w-full py-16 bg-gray-50 text-center">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-10 text-balance">
-            Benefícios de restaurar suas cadeiras
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {BENEFITS.map((benefit) => (
-              <div key={benefit.title} className="flex flex-col items-center p-8 bg-white rounded-lg shadow-md">
-                <FaCheckCircle className="text-green-500 text-4xl mb-4" aria-hidden="true" />
-                <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
-                <p className="text-gray-700">{benefit.description}</p>
+      <section className="relative isolate w-full overflow-hidden bg-charcoal py-16 text-cream md:py-28">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="absolute left-[-10%] top-[-10%] h-[420px] w-[420px] rounded-full bg-sand/10 blur-3xl" />
+        </div>
+
+        <div className="container relative z-10 mx-auto px-4">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="mb-4 text-xs font-medium uppercase tracking-[0.3em] text-cream/50">Por que restaurar</p>
+            <h2 className="font-serif text-3xl font-medium leading-[1.1] tracking-tight text-balance md:text-5xl">
+              Benefícios de restaurar suas <span className="italic text-sand">cadeiras</span>
+            </h2>
+          </div>
+
+          <div className="mx-auto mt-14 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3">
+            {BENEFITS.map((benefit, index) => (
+              <div key={benefit.title} className="flex flex-col rounded-2xl border border-cream/10 bg-cream/5 p-8">
+                <span aria-hidden="true" className="font-serif text-3xl text-sand tabular-nums">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h3 className="mt-4 text-xl font-medium text-cream">{benefit.title}</h3>
+                <p className="mt-2 leading-relaxed text-cream/70">{benefit.description}</p>
               </div>
             ))}
           </div>

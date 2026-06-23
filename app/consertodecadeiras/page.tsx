@@ -12,7 +12,7 @@ import { CONSERTO_FOOTER_LINKS } from "@/lib/site"
 export default function ConsertoDeCadeirasPage() {
   return (
     <>
-      <Header />
+      <Header overlay />
 
       <main>
         <HeroSection />

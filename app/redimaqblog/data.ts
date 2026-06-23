@@ -46,3 +46,12 @@ export const MOCK_POSTS: BlogPost[] = [
     slug: "organizacao-e-produtividade",
   },
 ]
+
+/** Abreviações de meses em pt-BR para um rótulo de data compacto. */
+const MONTHS_PT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+
+/** Formata "YYYY-MM-DD" como "28 jul 2024" (lido em UTC para ser estável em qualquer fuso). */
+export function formatPostDate(date: string): string {
+  const d = new Date(date)
+  return `${String(d.getUTCDate()).padStart(2, "0")} ${MONTHS_PT[d.getUTCMonth()]} ${d.getUTCFullYear()}`
+}

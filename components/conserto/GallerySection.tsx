@@ -1,28 +1,45 @@
-import Image from "next/image"
 import AnimatedSection from "@/components/AnimatedSection"
+import { ImageComparison } from "@/components/ui/image-comparison-slider"
 
-const GALLERY_IMAGES = ["/conserto_4.webp", "/conserto_5.webp"]
+interface Project {
+  before: string
+  after: string
+  alt: string
+}
 
-/** Galeria de projetos (antes e depois) de cadeiras consertadas. */
+const PROJECTS: Project[] = [
+  { before: "/conserto-3-antes.webp", after: "/conserto-4-depois.webp", alt: "cadeira presidente em couro" },
+  { before: "/conserto-5-antes.webp", after: "/conserto-6-depois.webp", alt: "cadeira de escritório estofada" },
+  { before: "/conserto-7-antes.webp", after: "/conserto-8-depois.webp", alt: "cadeira presidente estofada" },
+]
+
+/** Galeria de projetos (antes e depois) com slider de comparação. */
 export default function GallerySection() {
   return (
     <AnimatedSection id="galeria">
-      <section className="w-full py-16 bg-gray-50 text-center">
+      <section className="relative isolate w-full overflow-hidden bg-cream py-16 text-charcoal md:py-28">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-10 text-balance">Alguns de nossos projetos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {GALLERY_IMAGES.map((src, index) => (
-              <div key={index} className="relative h-70 w-full rounded-lg overflow-hidden shadow-lg">
-                <Image
-                  src={src || "/placeholder.svg"}
-                  alt={`Exemplo de cadeira consertada ${index + 1}`}
-                  fill
-                  loading="lazy"
-                  className={`object-cover ${src === "/conserto_5.webp" ? "object-center" : ""}`}
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="mb-4 text-xs font-medium uppercase tracking-[0.3em] text-charcoal/70">Antes e depois</p>
+            <h2 className="font-serif text-3xl font-medium leading-[1.1] tracking-tight text-balance md:text-5xl">
+              Alguns de nossos <span className="italic">projetos</span>
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-charcoal/70 md:text-lg">
+              Arraste a alça de cada imagem para comparar o antes e o depois de uma restauração real.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-14 grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-3">
+            {PROJECTS.map((project) => (
+              <div key={project.before} className="mx-auto w-full max-w-md lg:max-w-none">
+                <ImageComparison
+                  beforeImage={project.before}
+                  afterImage={project.after}
+                  aspectClassName="aspect-[4/5]"
+                  altBefore={`Antes do conserto: ${project.alt} desgastada`}
+                  altAfter={`Depois do conserto: ${project.alt} restaurada`}
+                  className="shadow-xl shadow-charcoal/15 ring-1 ring-sand-dark/40"
                 />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <p className="text-white text-xl font-semibold">Antes e Depois</p>
-                </div>
               </div>
             ))}
           </div>
